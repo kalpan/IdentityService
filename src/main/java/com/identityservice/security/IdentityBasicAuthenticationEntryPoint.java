@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
-public class IndentityBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
+public class IdentityBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
 	@Override
 	public void commence(final HttpServletRequest request, final HttpServletResponse response,
 			final AuthenticationException authException) throws IOException, ServletException {

@@ -56,8 +56,8 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	/** Basic Authentication entry point is defined. */
 	@Bean
-	public IndentityBasicAuthenticationEntryPoint getBasicAuthEntryPoint(){
-		return new IndentityBasicAuthenticationEntryPoint();
+	public IdentityBasicAuthenticationEntryPoint getBasicAuthEntryPoint(){
+		return new IdentityBasicAuthenticationEntryPoint();
 	}
 
 }
