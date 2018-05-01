@@ -62,6 +62,10 @@ public class UserController {
 	}
 
 	/**
+	 * createUser
+	 * 	- save user in cache/db
+	 *  - adds user info (username, password, role) into inMemoryUserDetailsManager
+	 * 
 	 * @param principal
 	 * @param user
 	 * @param uriComponentsBuilder
@@ -91,6 +95,8 @@ public class UserController {
 	}
 
 	/**
+	 * listAllUsers
+	 * 
 	 * @param principal
 	 * @return users
 	 */
@@ -109,6 +115,8 @@ public class UserController {
 	}
 
 	/**
+	 * getUser
+	 * 
 	 * @param userName
 	 * @return user
 	 */
@@ -131,6 +139,8 @@ public class UserController {
 	}
 
 	/**
+	 * getUserAsync
+	 * 
 	 * @param userName
 	 * @return user
 	 */
@@ -166,6 +176,8 @@ public class UserController {
 	}
 
 	/**
+	 * updateUser
+	 * 
 	 * @param userName
 	 * @param user
 	 * @return updatedUser
@@ -199,6 +211,10 @@ public class UserController {
 	}
 
 	/**
+	 * deleteUser
+	 * 
+	 * 	TBD: instead deleting user, set status to terminated
+	 * 
 	 * @param userName
 	 * @return
 	 */
