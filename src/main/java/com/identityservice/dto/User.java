@@ -1,29 +1,36 @@
 package com.identityservice.dto;
 
 import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class User implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
+    private static final AtomicLong counter = new AtomicLong();
 
     public User() {
+    	this.id = counter.incrementAndGet();
+    	this.status = Status.ACTIVE;
     }
     
-    public User(Long id, String firstName, String lastName, String userName) {
+    public User(String firstName, String lastName, String userName) {
     	this.firstName = firstName;
     	this.lastName = lastName;
     	this.userName = userName;
     	this.createDate = Calendar.getInstance();
-    	this.id = id;
+    	this.id = counter.incrementAndGet();
+    	this.status = Status.ACTIVE;
     }
     
-    public User(Long id, String firstName, String lastName, String userName, String password) {
+    public User(String firstName, String lastName, String userName, String password) {
     	this.firstName = firstName;
     	this.lastName = lastName;
     	this.userName = userName;
     	this.createDate = Calendar.getInstance();
-    	this.id = id;
     	this.password = password;
+    	this.id = counter.incrementAndGet();
+    	this.status = Status.ACTIVE;
     }
     
     private Long id;
@@ -40,7 +47,7 @@ public class User implements java.io.Serializable {
     
     private String email;
     
-    private String status;
+    private Status status;
     
     @DateTimeFormat(style = "M-")
     private Calendar createDate;
@@ -174,7 +181,7 @@ public class User implements java.io.Serializable {
      *
      * @return Status
      */
-    public String getStatus() {
+    public Status getStatus() {
         return this.status;
     }
 
@@ -184,7 +191,7 @@ public class User implements java.io.Serializable {
      * @param status
      * @return User
      */
-    public User setStatus(String status) {
+    public User setStatus(Status status) {
         this.status = status;
         return this;
     }
@@ -293,10 +300,7 @@ public class User implements java.io.Serializable {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
-		if (status == null) {
-			if (other.status != null)
-				return false;
-		} else if (!status.equals(other.status))
+		if (status != other.status)
 			return false;
 		if (title == null) {
 			if (other.title != null)
@@ -322,4 +326,5 @@ public class User implements java.io.Serializable {
 				+ ", title=" + title + ", password=" + password + ", email=" + email + ", status=" + status
 				+ ", createDate=" + createDate + ", updateDate=" + updateDate + "]";
 	}
+
 }

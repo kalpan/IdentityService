@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +24,6 @@ import com.identityservice.dto.User;
 public class UserServiceImpl implements UserService {
 
 	public static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
-	private static final AtomicLong counter = new AtomicLong();
 	private static List<User> usersCache;
 
 	static {
@@ -70,7 +67,6 @@ public class UserServiceImpl implements UserService {
 	@Secured("ROLE_ADMIN")
 	@Override
 	public void saveUser(User user) {
-		user.setId(counter.incrementAndGet());
 		usersCache.add(user);
 	}
 
@@ -115,8 +111,10 @@ public class UserServiceImpl implements UserService {
 	 */
 	private static List<User> populateDemoDatabase() {
 		List<User> users = new ArrayList<User>();
-		users.add(new User(counter.incrementAndGet(), "admin", "admin", "admin", "admin"));
-		users.add(new User(counter.incrementAndGet(), "guest", "guest", "guest", "guest"));
+		User u1 = new User("admin", "admin", "admin", "admin");
+		users.add(u1);
+		User u2 = new User("guest", "guest", "guest", "guest");
+		users.add(u2);
 		return users;
 	}
 
