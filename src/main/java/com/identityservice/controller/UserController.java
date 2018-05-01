@@ -64,7 +64,7 @@ public class UserController {
 	/**
 	 * @param principal
 	 * @param user
-	 * @param ucBuilder
+	 * @param uriComponentsBuilder
 	 * @return
 	 */
 	@RequestMapping(value = "/admin/user", method = RequestMethod.POST)
@@ -92,7 +92,7 @@ public class UserController {
 
 	/**
 	 * @param principal
-	 * @return
+	 * @return users
 	 */
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	public ResponseEntity<List<User>> listAllUsers(Principal principal) {
@@ -110,7 +110,7 @@ public class UserController {
 
 	/**
 	 * @param userName
-	 * @return
+	 * @return user
 	 */
 	@RequestMapping(value = "/user/{userName}", method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -132,7 +132,7 @@ public class UserController {
 
 	/**
 	 * @param userName
-	 * @return
+	 * @return user
 	 */
 	@RequestMapping(value = "/async/user/{userName}", method = RequestMethod.GET, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
@@ -168,7 +168,7 @@ public class UserController {
 	/**
 	 * @param userName
 	 * @param user
-	 * @return
+	 * @return updatedUser
 	 */
 	@RequestMapping(value = "/admin/user/{userName}", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateUser(Principal principal, @PathVariable("userName") String userName, @RequestBody User user) {
