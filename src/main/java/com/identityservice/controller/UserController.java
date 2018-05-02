@@ -58,12 +58,9 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
-	private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
-
 	@Autowired
-	public UserController(InMemoryUserDetailsManager inMemoryUserDetailsManager) {
-		this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
-	}
+	private InMemoryUserDetailsManager inMemoryUserDetailsManager;
+
 
 	/**
 	 * createUser
@@ -215,7 +212,7 @@ public class UserController {
 		if (user == null) {
 			logger.error("Unable to delete. User with userName %s not found.", userName);
 			return new ResponseEntity<Object>(
-					String.format("Unable to delete. User with id %d is not found.", userName), HttpStatus.NOT_FOUND);
+					String.format("Unable to delete. User with id %s is not found.", userName), HttpStatus.NOT_FOUND);
 		}
 		userService.deleteUserById(user.getId());
 		inMemoryUserDetailsManager.deleteUser(user.getUserName());
