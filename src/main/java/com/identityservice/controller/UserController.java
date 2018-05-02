@@ -203,13 +203,20 @@ public class UserController {
 					HttpStatus.NOT_FOUND);
 		}
 
-		currentUser.setId(user.getId());
-		currentUser.setFirstName(user.getFirstName());
-		currentUser.setLastName(user.getLastName());
-		currentUser.setUserName(user.getUserName());
-		currentUser.setEmail(user.getEmail());
-		currentUser.setPassword(user.getPassword());
-		currentUser.setStatus(user.getStatus());
+		if (user.getFirstName() != null)
+			currentUser.setFirstName(user.getFirstName());
+		
+		if (user.getLastName() != null)
+			currentUser.setLastName(user.getLastName());
+
+		if (user.getEmail() != null)
+			currentUser.setEmail(user.getEmail());
+		
+		if (user.getPassword() != null)
+			currentUser.setPassword(user.getPassword());
+		
+		if (user.getStatus() != null)
+			currentUser.setStatus(user.getStatus());
 
 		userService.updateUser(currentUser);
 		return new ResponseEntity<User>(currentUser, HttpStatus.OK);

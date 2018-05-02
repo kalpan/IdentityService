@@ -1,6 +1,7 @@
 package com.identityservice.service;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,8 @@ public class UserServiceImpl implements UserService {
 	@Secured({ "ROLE_USER", "ROLE_ADMIN" })
 	@Override
 	public List<User> findAllUsers() {
-		return usersCache.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+		return usersCache.entrySet().stream().sorted((e1, e2) -> e1.getValue().getId().compareTo(e2.getValue().getId()))
+				.map(Map.Entry::getValue).collect(Collectors.toList());
 	}
 
 	@Secured("ROLE_ADMIN")
