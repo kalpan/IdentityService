@@ -1,6 +1,7 @@
 package com.identityservice.controller;
 
 import java.security.Principal;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.identityservice.dto.Status;
 import com.identityservice.dto.User;
 import com.identityservice.service.UserService;
 
@@ -207,6 +209,7 @@ public class UserController {
 		currentUser.setUserName(user.getUserName());
 		currentUser.setEmail(user.getEmail());
 		currentUser.setPassword(user.getPassword());
+		currentUser.setStatus(user.getStatus());
 
 		userService.updateUser(currentUser);
 		return new ResponseEntity<User>(currentUser, HttpStatus.OK);

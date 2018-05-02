@@ -16,13 +16,20 @@ public class User implements java.io.Serializable {
     	this.status = Status.ACTIVE;
     }
     
+    public User(String firstName, String lastName, String userName, Status status) {
+    	this(firstName, lastName, userName);
+    	this.status = status;
+    }
+    
     public User(String firstName, String lastName, String userName) {
     	this.firstName = firstName;
     	this.lastName = lastName;
     	this.userName = userName;
     	this.createDate = Calendar.getInstance();
+    	this.updateDate = Calendar.getInstance();
     	this.id = counter.incrementAndGet();
     	this.status = Status.ACTIVE;
+    	this.email = String.format("%s@identityservice.com", userName);
     }
     
     public User(String firstName, String lastName, String userName, String password) {
@@ -30,9 +37,11 @@ public class User implements java.io.Serializable {
     	this.lastName = lastName;
     	this.userName = userName;
     	this.createDate = Calendar.getInstance();
+    	this.updateDate = Calendar.getInstance();
     	this.password = password;
     	this.id = counter.incrementAndGet();
     	this.status = Status.ACTIVE;
+    	this.email = String.format("%s@identityservice.com", userName);
     }
     
     private Long id;
@@ -45,8 +54,6 @@ public class User implements java.io.Serializable {
     
     @NotEmpty(message = "{user.userName.required}")
     private String userName;
-    
-    private String title;
     
     @NotEmpty(message = "{user.password.required}")
     private String password;
@@ -119,26 +126,6 @@ public class User implements java.io.Serializable {
      */
     public User setUserName(String userName) {
         this.userName = userName;
-        return this;
-    }
-
-    /**
-     * Gets title value
-     *
-     * @return String
-     */
-    public String getTitle() {
-        return this.title;
-    }
-
-    /**
-     * Sets title value
-     *
-     * @param title
-     * @return User
-     */
-    public User setTitle(String title) {
-        this.title = title;
         return this;
     }
 
@@ -261,7 +248,6 @@ public class User implements java.io.Serializable {
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
-		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		result = prime * result + ((updateDate == null) ? 0 : updateDate.hashCode());
 		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
 		return result;
@@ -308,11 +294,6 @@ public class User implements java.io.Serializable {
 			return false;
 		if (status != other.status)
 			return false;
-		if (title == null) {
-			if (other.title != null)
-				return false;
-		} else if (!title.equals(other.title))
-			return false;
 		if (updateDate == null) {
 			if (other.updateDate != null)
 				return false;
@@ -329,8 +310,20 @@ public class User implements java.io.Serializable {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", userName=" + userName
-				+ ", title=" + title + ", password=" + password + ", email=" + email + ", status=" + status
+				+ ", password=" + password + ", email=" + email + ", status=" + status
 				+ ", createDate=" + createDate + ", updateDate=" + updateDate + "]";
 	}
+	
+	/** utility methods */
+    public void completeDefaultsIfMissing() {
+    	if (this.createDate == null)
+    		this.createDate = Calendar.getInstance();
+    	
+    	if (this.updateDate == null)
+    		this.updateDate = Calendar.getInstance();
+    	
+    	if (this.email == null)
+    		this.email = String.format("%s@identityservice.com", userName);
+    }
 
 }

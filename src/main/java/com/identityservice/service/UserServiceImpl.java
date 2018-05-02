@@ -1,5 +1,6 @@
 package com.identityservice.service;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,12 +57,14 @@ public class UserServiceImpl implements UserService {
 	@Secured("ROLE_ADMIN")
 	@Override
 	public void saveUser(User user) {
+		user.completeDefaultsIfMissing();
 		usersCache.put(user.getUserName(), user);
 	}
 
 	@Secured("ROLE_ADMIN")
 	@Override
 	public void updateUser(User user) {
+		user.setUpdateDate(Calendar.getInstance());
 		usersCache.put(user.getUserName(), user);
 	}
 

@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.identityservice.controller.UserController;
+import com.identityservice.dto.Status;
 import com.identityservice.dto.User;
 
 /*
@@ -91,6 +92,15 @@ public class IdentityServiceApplicationTests {
 		User updatedUser = response.getBody();
 		assertEquals("TesterChanged", updatedUser.getLastName());
 	}
+	
+	private void deactivateUser() {
+		User user = new User("John", "jtester", "jtester", Status.INACTIVE);
+		HttpEntity<Object> request = new HttpEntity<Object>(user, getHeaders());
+		ResponseEntity<User> response = restTemplate.exchange(TEST_URI + "/admin/user/jtester", HttpMethod.PUT, request,
+				User.class);
+		User updatedUser = response.getBody();
+		assertEquals(Status.INACTIVE, updatedUser.getStatus());
+	}
 
 	private void deleteUser() {
 		HttpEntity<String> request = new HttpEntity<String>(getHeaders());
@@ -113,6 +123,7 @@ public class IdentityServiceApplicationTests {
 		createUser();
 		getUser();
 		updateUser();
+		deactivateUser();
 		getAllUsers();
 		deleteUser();
 		deleteAllUsers();

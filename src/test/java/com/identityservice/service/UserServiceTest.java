@@ -19,7 +19,6 @@ public class UserServiceTest {
 
     @TestConfiguration
     static class UserServiceImplTestContextConfiguration {
-
         @Bean
         public UserService userService() {
             return new UserServiceImpl();
