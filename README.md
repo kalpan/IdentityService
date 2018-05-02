@@ -65,6 +65,15 @@ After running:
   curl -v http://localhost:8080/api/admin/user -H "Content-Type: application/json" -X DELETE -u 'admin:admin'
   ```
   
+  Delayed async get user:
+  ```
+  curl -v http://localhost:8080/api/async/user/zoe/9000 -H "Content-Type: application/json" -u 'jdoe:blabla'
+  ```
+  
+  Async get user that will time out:
+  ```
+  curl -v http://localhost:8080/api/async/user/zoe/11000 -H "Content-Type: application/json" -u 'jdoe:blabla'
+  ```
   
 Integration Tests:  
   Please refer to IdentityServiceApplicationTests.java for Java REST examples for each API call.

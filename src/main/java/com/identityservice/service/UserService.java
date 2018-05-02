@@ -28,6 +28,14 @@ public interface UserService {
 	 * @return user
 	 */
 	CompletableFuture<User> findByUserNameAsync(String name);
+	
+	/**
+	 * This is to demonstrate a delayed request as well as a timeout situation
+	 * 
+	 * @param name
+	 * @return user
+	 */
+	CompletableFuture<User> findByUserNameAsyncDelayed(String userName, long delayInMillis);
 
 	/**
 	 * @param user

@@ -53,6 +53,7 @@ import com.identityservice.service.UserService;
 public class UserController {
 
 	public static final Logger logger = LoggerFactory.getLogger(UserController.class);
+	private static final long ASYNC_TIMEOUT_SECS = 10L;
 
 	@Autowired
 	UserService userService;
@@ -138,42 +139,6 @@ public class UserController {
 					HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<User>(user, HttpStatus.OK);
-	}
-
-	/**
-	 * getUserAsync
-	 * 
-	 * @param userName
-	 * @return user
-	 */
-	@RequestMapping(value = "/async/user/{userName}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<?> getUserAsync(Principal principal, @PathVariable("userName") String userName) {
-		Authentication authentication = (Authentication) principal;
-		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
-				.getPrincipal();
-		logger.debug("GET/getUserAsync requesting user: " + reqUser.toString());
-		logger.debug("GET User with userName {}", userName);
-		CompletableFuture<User> user = userService.findByUserNameAsync(userName);
-		if (user == null) {
-			logger.debug("User with userName {} not found.", userName);
-			return new ResponseEntity<Object>(String.format("User with userName %s is not found.", userName),
-					HttpStatus.NOT_FOUND);
-		}
-
-		String err;
-		try {
-			return new ResponseEntity<User>(user.get(30, TimeUnit.SECONDS), HttpStatus.OK);
-		} catch (InterruptedException e) {
-			logger.error(String.format("InterruptedException:%s", e));
-			err = e.getMessage();
-		} catch (ExecutionException e) {
-			logger.error(String.format("ExecutionException:%s", e));
-			err = e.getMessage();
-		} catch (TimeoutException e) {
-			logger.error(String.format("TimeoutException:%s", e));
-			err = e.getMessage();
-		}
-		return new ResponseEntity<String>(String.format("{'ERR': '%s'}", err), HttpStatus.REQUEST_TIMEOUT);
 	}
 
 	/**
@@ -276,5 +241,85 @@ public class UserController {
 		users.forEach(u -> inMemoryUserDetailsManager.deleteUser(u.getUserName()));
 		return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
 	}
+	
+	/** Async APIs */
+	
+	/**
+	 * getUserAsync
+	 * 
+	 * @param userName
+	 * @return user
+	 */
+	@RequestMapping(value = "/async/user/{userName}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<?> getUserAsync(Principal principal, @PathVariable("userName") String userName) {
+		Authentication authentication = (Authentication) principal;
+		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
+				.getPrincipal();
+		logger.debug("GET/getUserAsync requesting user: " + reqUser.toString());
+		logger.debug("GET User with userName {}", userName);
+		
+		String err;
+		try {
+			CompletableFuture<User> userFuture = userService.findByUserNameAsync(userName);
+			User user = userFuture.get(ASYNC_TIMEOUT_SECS, TimeUnit.SECONDS);
+			if (user == null) {
+				logger.debug("User with userName {} not found.", userName);
+				return new ResponseEntity<Object>(String.format("User with userName %s is not found.", userName),
+						HttpStatus.NOT_FOUND);
+			}
+		
+			return new ResponseEntity<User>(user, HttpStatus.OK);
+		} catch (InterruptedException e) {
+			logger.error(String.format("InterruptedException:%s", e));
+			err = "Request was interrupted.";
+		} catch (ExecutionException e) {
+			logger.error(String.format("ExecutionException:%s", e));
+			err = "There was an execution error.";
+		} catch (TimeoutException e) {
+			logger.error(String.format("TimeoutException:%s", e));
+			err = "Request timed out.";
+		}
+		return new ResponseEntity<String>(String.format("{'ERR': '%s'}", err), HttpStatus.REQUEST_TIMEOUT);
+	}
+	
+	/**
+	 * getUserAsync
+	 * 
+	 * @param userName
+	 * @return user
+	 */
+	@RequestMapping(value = "/async/user/{userName}/{delay}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<?> getUserAsyncDelayed(Principal principal, @PathVariable("userName") String userName, @PathVariable("delay") Long delay) {
+		Authentication authentication = (Authentication) principal;
+		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
+				.getPrincipal();
+		logger.debug("GET/getUserAsync requesting user: " + reqUser.toString());
+		logger.debug("GET User with userName {}", userName);
+		
+		String err;
+		try {
+			CompletableFuture<User> userFuture = userService.findByUserNameAsyncDelayed(userName, delay.longValue());
+			User user = userFuture.get(ASYNC_TIMEOUT_SECS, TimeUnit.SECONDS);
+			
+			if (user == null) {
+				logger.debug("User with userName {} not found.", userName);
+				return new ResponseEntity<Object>(String.format("User with userName %s is not found.", userName),
+						HttpStatus.NOT_FOUND);
+			}
+		
+			return new ResponseEntity<User>(user, HttpStatus.OK);
+		} catch (InterruptedException e) {
+			logger.error(String.format("InterruptedException:%s", e));
+			err = "Request was interrupted.";
+		} catch (ExecutionException e) {
+			logger.error(String.format("ExecutionException:%s", e));
+			err = "There was an execution error.";
+		} catch (TimeoutException e) {
+			logger.error(String.format("TimeoutException:%s", e));
+			err = "Request timed out.";
+		}
+		return new ResponseEntity<String>(String.format("{'ERR': '%s'}", err), HttpStatus.REQUEST_TIMEOUT);
+	}
+
 
 }

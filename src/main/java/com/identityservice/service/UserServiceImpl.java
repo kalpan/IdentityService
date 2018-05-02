@@ -49,9 +49,28 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public CompletableFuture<User> findByUserNameAsync(String userName) {
 		if (usersCache.containsKey(userName))
-			return CompletableFuture.completedFuture(usersCache.get(userName));
+			return CompletableFuture.supplyAsync(() -> usersCache.get(userName));
 		else
 			return null;
+	}
+	
+	@Secured({ "ROLE_USER", "ROLE_ADMIN" })
+	@Async
+	@Override
+	public CompletableFuture<User> findByUserNameAsyncDelayed(String userName, long delayInMillis) {
+		if (usersCache.containsKey(userName))
+			return CompletableFuture.supplyAsync(() -> getUserFromCacheDelayed(userName, delayInMillis));
+		else
+			return null;
+	}
+	
+	private User getUserFromCacheDelayed(String userName, long delayInMillis) {
+		try {
+			Thread.sleep(delayInMillis);
+		} catch (InterruptedException e) {
+			//ignore
+		}
+		return usersCache.get(userName);
 	}
 
 	@Secured("ROLE_ADMIN")
