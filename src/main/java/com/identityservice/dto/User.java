@@ -3,6 +3,8 @@ package com.identityservice.dto;
 import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class User implements java.io.Serializable {
@@ -35,14 +37,18 @@ public class User implements java.io.Serializable {
     
     private Long id;
     
+    @NotEmpty(message = "{user.firstName.required}")
     private String firstName;
     
+    @NotEmpty(message = "{user.lastName.required}")
     private String lastName;
     
+    @NotEmpty(message = "{user.userName.required}")
     private String userName;
     
     private String title;
     
+    @NotEmpty(message = "{user.password.required}")
     private String password;
     
     private String email;

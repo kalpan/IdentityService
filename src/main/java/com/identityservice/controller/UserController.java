@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,13 +74,13 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/admin/user", method = RequestMethod.POST)
-	public ResponseEntity<Void> createUser(Principal principal, @RequestBody User user,
+	public ResponseEntity<Void> createUser(Principal principal, @Valid @RequestBody User user,
 			UriComponentsBuilder uriComponentsBuilder) {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User adminUser = (org.springframework.security.core.userdetails.User) authentication
 				.getPrincipal();
-		logger.info("POST/createUser requesting user: " + adminUser.toString());
-		logger.info("POST User " + user.getUserName());
+		logger.debug("POST/createUser requesting user: " + adminUser.toString());
+		logger.debug("POST User " + user.getUserName());
 
 		if (userService.isUserExist(user)) {
 			logger.debug("User with username " + user.getUserName() + " already exists.");
@@ -105,7 +107,7 @@ public class UserController {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
 				.getPrincipal();
-		logger.info("GET/listAllUsers requesting user: " + reqUser.toString());
+		logger.debug("GET/listAllUsers requesting user: " + reqUser.toString());
 
 		List<User> users = userService.findAllUsers();
 		if (users.isEmpty())
@@ -126,8 +128,8 @@ public class UserController {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
 				.getPrincipal();
-		logger.info("GET/getUser requesting user: " + reqUser.toString());
-		logger.info("GET User with userName {}", userName);
+		logger.debug("GET/getUser requesting user: " + reqUser.toString());
+		logger.debug("GET User with userName {}", userName);
 		
 		User user = userService.findByUserName(userName);
 		if (user == null) {
@@ -150,7 +152,7 @@ public class UserController {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
 				.getPrincipal();
-		logger.info("GET/getUserAsync requesting user: " + reqUser.toString());
+		logger.debug("GET/getUserAsync requesting user: " + reqUser.toString());
 		logger.debug("GET User with userName {}", userName);
 		CompletableFuture<User> user = userService.findByUserNameAsync(userName);
 		if (user == null) {
@@ -187,13 +189,13 @@ public class UserController {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
 				.getPrincipal();
-		logger.info("PUT/updateUser requesting user: " + reqUser.toString());
-		logger.info("PUT User with userName {}", userName);
+		logger.debug("PUT/updateUser requesting user: " + reqUser.toString());
+		logger.debug("PUT User with userName {}", userName);
 
 		User currentUser = userService.findByUserName(userName);
 
 		if (currentUser == null) {
-			logger.error("Unable to update. User with userName {} not found.", userName);
+			logger.debug("Unable to update. User with userName {} not found.", userName);
 			return new ResponseEntity<Object>(
 					String.format("Unable to upate. User with userName %s is not found.", userName),
 					HttpStatus.NOT_FOUND);
@@ -223,8 +225,8 @@ public class UserController {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
 				.getPrincipal();
-		logger.info("DELETE/deleteUser requesting user: " + reqUser.toString());
-		logger.info("Fetching & Deleting User with userName {}", userName);
+		logger.debug("DELETE/deleteUser requesting user: " + reqUser.toString());
+		logger.debug("Fetching & Deleting User with userName {}", userName);
 
 		User user = userService.findByUserName(userName);
 		if (user == null) {
@@ -237,6 +239,9 @@ public class UserController {
 	}
 
 	/**
+	 * deleteAllUsers
+	 * 	- mainly used for testing.
+	 *
 	 * @return
 	 */
 	@RequestMapping(value = "/admin/user/", method = RequestMethod.DELETE)
@@ -244,8 +249,8 @@ public class UserController {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
 				.getPrincipal();
-		logger.info("DELETE/deleteAllUsers requesting user: " + reqUser.toString());
-		logger.info("Deleting All Users");
+		logger.debug("DELETE/deleteAllUsers requesting user: " + reqUser.toString());
+		logger.debug("Deleting All Users");
 
 		userService.deleteAllUsers();
 		return new ResponseEntity<User>(HttpStatus.NO_CONTENT);

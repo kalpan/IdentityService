@@ -1,9 +1,10 @@
 package com.identityservice.service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ import com.identityservice.dto.User;
 public class UserServiceImpl implements UserService {
 
 	public static final Logger logger = LoggerFactory.getLogger(UserController.class);
-	private static List<User> usersCache;
+	private static Map<String, User> usersCache;
 
 	static {
 		usersCache = populateDemoDatabase();
@@ -33,65 +34,48 @@ public class UserServiceImpl implements UserService {
 	@Secured({ "ROLE_USER", "ROLE_ADMIN" })
 	@Override
 	public User findById(long id) {
-		for (User user : usersCache) {
-			if (user.getId() == id) {
-				return user;
-			}
-		}
-		return null;
+		return usersCache.values().stream().filter(u -> u.getId().equals(id)).findFirst().orElse(null);
 	}
 
 	@Secured({ "ROLE_USER", "ROLE_ADMIN" })
 	@Override
 	public User findByUserName(String userName) {
-		for (User user : usersCache) {
-			if (user.getUserName().equalsIgnoreCase(userName)) {
-				return user;
-			}
-		}
-		return null;
+		return usersCache.get(userName);
 	}
 
 	@Secured({ "ROLE_USER", "ROLE_ADMIN" })
 	@Async
 	@Override
 	public CompletableFuture<User> findByUserNameAsync(String userName) {
-		for (User user : usersCache) {
-			if (user.getUserName().equalsIgnoreCase(userName)) {
-				return CompletableFuture.completedFuture(user);
-			}
-		}
-		return null;
+		if (usersCache.containsKey(userName))
+			return CompletableFuture.completedFuture(usersCache.get(userName));
+		else
+			return null;
 	}
 
 	@Secured("ROLE_ADMIN")
 	@Override
 	public void saveUser(User user) {
-		usersCache.add(user);
+		usersCache.put(user.getUserName(), user);
 	}
 
 	@Secured("ROLE_ADMIN")
 	@Override
 	public void updateUser(User user) {
-		int index = usersCache.indexOf(user);
-		usersCache.set(index, user);
+		usersCache.put(user.getUserName(), user);
 	}
 
 	@Secured("ROLE_ADMIN")
 	@Override
 	public void deleteUserById(long id) {
-		for (Iterator<User> iterator = usersCache.iterator(); iterator.hasNext();) {
-			User user = iterator.next();
-			if (user.getId() == id) {
-				iterator.remove();
-			}
-		}
+		User user = findById(id);
+		usersCache.remove(user.getUserName());
 	}
 
 	@Secured({ "ROLE_USER", "ROLE_ADMIN" })
 	@Override
 	public List<User> findAllUsers() {
-		return usersCache;
+		return usersCache.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
 	}
 
 	@Secured("ROLE_ADMIN")
@@ -109,12 +93,12 @@ public class UserServiceImpl implements UserService {
 	/*
 	 * New users are added to this demo database, in other words users cache.
 	 */
-	private static List<User> populateDemoDatabase() {
-		List<User> users = new ArrayList<User>();
+	private static Map<String, User> populateDemoDatabase() {
+		Map<String, User> users = new HashMap<>();
 		User u1 = new User("admin", "admin", "admin", "admin");
-		users.add(u1);
+		users.put(u1.getUserName(), u1);
 		User u2 = new User("guest", "guest", "guest", "guest");
-		users.add(u2);
+		users.put(u2.getUserName(), u2);
 		return users;
 	}
 
