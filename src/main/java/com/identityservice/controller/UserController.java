@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.identityservice.dto.Status;
 import com.identityservice.dto.User;
 import com.identityservice.service.UserService;
 
@@ -245,6 +244,7 @@ public class UserController {
 					String.format("Unable to delete. User with id %d is not found.", userName), HttpStatus.NOT_FOUND);
 		}
 		userService.deleteUserById(user.getId());
+		inMemoryUserDetailsManager.deleteUser(user.getUserName());
 		return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
 	}
 
@@ -254,7 +254,7 @@ public class UserController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/admin/user/", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/admin/user", method = RequestMethod.DELETE)
 	public ResponseEntity<User> deleteAllUsers(Principal principal) {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
@@ -262,7 +262,9 @@ public class UserController {
 		logger.debug("DELETE/deleteAllUsers requesting user: " + reqUser.toString());
 		logger.debug("Deleting All Users");
 
+		List<User> users = userService.findAllUsers();
 		userService.deleteAllUsers();
+		users.forEach(u -> inMemoryUserDetailsManager.deleteUser(u.getUserName()));
 		return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
 	}
 

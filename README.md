@@ -42,13 +42,24 @@ After running:
   
   List all users:
   ```
-  curl -v http://localhost:8080/api/user/ -H "Content-Type: application/json" -u 'jdoe:blabla'
+  curl -v http://localhost:8080/api/user -H "Content-Type: application/json" -u 'jdoe:blabla'
   ```
   
   Update user:
   ```
   curl -v http://localhost:8080/api/admin/user/zoe -H "Content-Type: application/json" -X PUT -d '{"userName":"zoe", "status":"INACTIVE"}' -u 'admin:admin'
   ```
+  
+  Delete user:
+  ```
+  curl -v http://localhost:8080/api/admin/user/zoe -H "Content-Type: application/json" -X DELETE -u 'admin:admin'
+  ```
+  
+  Delete all users:
+  ```
+  curl -v http://localhost:8080/api/admin/user -H "Content-Type: application/json" -X DELETE -u 'admin:admin'
+  ```
+  
   
 Integration Tests:  
   Please refer to IdentityServiceApplicationTests.java for Java REST examples for each API call.
