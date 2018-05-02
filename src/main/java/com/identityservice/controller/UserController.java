@@ -261,13 +261,13 @@ public class UserController {
 		String err;
 		try {
 			CompletableFuture<User> userFuture = userService.findByUserNameAsync(userName);
-			User user = userFuture.get(ASYNC_TIMEOUT_SECS, TimeUnit.SECONDS);
-			if (user == null) {
+			if (userFuture == null) {
 				logger.debug("User with userName {} not found.", userName);
 				return new ResponseEntity<Object>(String.format("User with userName %s is not found.", userName),
 						HttpStatus.NOT_FOUND);
 			}
-		
+			
+			User user = userFuture.get(ASYNC_TIMEOUT_SECS, TimeUnit.SECONDS);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (InterruptedException e) {
 			logger.error(String.format("InterruptedException:%s", e));
@@ -299,14 +299,13 @@ public class UserController {
 		String err;
 		try {
 			CompletableFuture<User> userFuture = userService.findByUserNameAsyncDelayed(userName, delay.longValue());
-			User user = userFuture.get(ASYNC_TIMEOUT_SECS, TimeUnit.SECONDS);
-			
-			if (user == null) {
+			if (userFuture == null) {
 				logger.debug("User with userName {} not found.", userName);
 				return new ResponseEntity<Object>(String.format("User with userName %s is not found.", userName),
 						HttpStatus.NOT_FOUND);
 			}
-		
+			
+			User user = userFuture.get(ASYNC_TIMEOUT_SECS, TimeUnit.SECONDS);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (InterruptedException e) {
 			logger.error(String.format("InterruptedException:%s", e));
