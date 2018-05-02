@@ -1,7 +1,6 @@
 package com.identityservice.controller;
 
 import java.security.Principal;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -27,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.identityservice.dto.User;
+import com.identityservice.dto.Status;
 import com.identityservice.service.UserService;
 
 /*
@@ -103,7 +103,7 @@ public class UserController {
 	 * @param principal
 	 * @return users
 	 */
-	@RequestMapping(value = "/user", method = RequestMethod.GET)
+	@RequestMapping(value = "/user", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<List<User>> listAllUsers(Principal principal) {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
@@ -123,8 +123,7 @@ public class UserController {
 	 * @param userName
 	 * @return user
 	 */
-	@RequestMapping(value = "/user/{userName}", method = RequestMethod.GET, produces = {
-			MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+	@RequestMapping(value = "/user/{userName}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<?> getUser(Principal principal, @PathVariable("userName") String userName) {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
@@ -147,8 +146,7 @@ public class UserController {
 	 * @param userName
 	 * @return user
 	 */
-	@RequestMapping(value = "/async/user/{userName}", method = RequestMethod.GET, produces = {
-			MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(value = "/async/user/{userName}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<?> getUserAsync(Principal principal, @PathVariable("userName") String userName) {
 		Authentication authentication = (Authentication) principal;
 		org.springframework.security.core.userdetails.User reqUser = (org.springframework.security.core.userdetails.User) authentication
@@ -214,8 +212,19 @@ public class UserController {
 		if (user.getPassword() != null)
 			currentUser.setPassword(user.getPassword());
 		
-		if (user.getStatus() != null)
+		if (user.getStatus() != null) {
 			currentUser.setStatus(user.getStatus());
+			
+			// Based on Status: Remove user's access if deactivated OR Activate user's access if it doesn't exist.
+			if (currentUser.getStatus().equals(Status.INACTIVE))
+				inMemoryUserDetailsManager.deleteUser(currentUser.getUserName());
+			else if (user.getStatus().equals(Status.ACTIVE)) {
+				if (!inMemoryUserDetailsManager.userExists(currentUser.getUserName())) {
+						inMemoryUserDetailsManager.createUser(org.springframework.security.core.userdetails.User
+								.withUsername(currentUser.getUserName()).password(currentUser.getPassword()).authorities("ROLE_USER").build());
+				}
+			}
+		}
 
 		userService.updateUser(currentUser);
 		return new ResponseEntity<User>(currentUser, HttpStatus.OK);

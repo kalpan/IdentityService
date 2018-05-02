@@ -47,6 +47,11 @@ After running:
   
   Update user:
   ```
+  curl -v http://localhost:8080/api/admin/user/zoe -H "Content-Type: application/json" -X PUT -d '{"userName":"zoe", "lastName":"doe"}' -u 'admin:admin'
+  ```
+  
+  Deactivate user:
+  ```
   curl -v http://localhost:8080/api/admin/user/zoe -H "Content-Type: application/json" -X PUT -d '{"userName":"zoe", "status":"INACTIVE"}' -u 'admin:admin'
   ```
   
